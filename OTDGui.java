@@ -1,9 +1,10 @@
 import javax.swing.JFrame;
-import javax.swing.JButton;
 
-import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
 /**
  * Handles the gui for the game.
@@ -13,23 +14,54 @@ import java.awt.Dimension;
  */
 public class OTDGui extends JFrame {
 
-	public static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+	public final int SCREEN_WIDTH, SCREEN_HEIGHT;
+
+	private MapGui mapGui;
+	private TileInfoGui tileInfoGui;
 
 	private Map map;
 
 	public OTDGui() {
-		setupLayout();
 
-		setSize(SCREEN_SIZE);
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		SCREEN_WIDTH = getMinWidth();
+		SCREEN_HEIGHT = gd.getDisplayMode().getHeight();
+
+		setSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+		setupGrid();
+
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
+		mapGui.initializeMap(new Map(20, 10));
 	}
 
-	private void setupLayout() {
-		GridLayout grid = new GridLayout(2, 0);
-		setLayout(grid);
-		add(new JButton("Hello"));
-		add(new JButton("Goodbye"));
+	private int getMinWidth() {
+		// Returns the display with the minimum width (for my extended display setup)
+		int minWidth = Integer.MAX_VALUE;
+		for (GraphicsDevice gd : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices())
+			if (gd.getDisplayMode().getWidth() < minWidth)
+				minWidth = gd.getDisplayMode().getWidth();
+		return minWidth;
+	}
+
+	private void setupGrid() {
+		BorderLayout layout = new BorderLayout();
+		setLayout(layout);
+		setupMapGui();
+		setupTileInfoGui();
+	}
+
+	private void setupMapGui() {
+		mapGui = new MapGui();
+		add(mapGui, BorderLayout.CENTER);
+	}
+
+	private void setupTileInfoGui() {
+		tileInfoGui = new TileInfoGui();
+		tileInfoGui.setPreferredSize(new Dimension(
+			SCREEN_WIDTH, (int)(SCREEN_HEIGHT * 0.2)
+		));
+		add(tileInfoGui, BorderLayout.SOUTH);
 	}
 
 }

@@ -18,7 +18,18 @@ public class Map {
 		this.height = height;
 		this.tiles = new Tile[width][height];
 		this.characters = new ArrayList<NPC>();
+
+		generateMap();
 	}
 
+	private void generateMap() {
+		for (int i = 0; i < width; i++)
+			tiles[i][height / 2] = new Path();
+	}
+
+
+	public int getWidth() { return width; }
+	public int getHeight() { return height; }
+	public Tile getTile(int x, int y) { return tiles[x][y]; }
 }
 
